@@ -23,6 +23,7 @@ train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, val
 
 nn_model = nn.Sequential(
     nn.Linear(181, 181),
+
     nn.LeakyReLU(inplace=True),
     nn.BatchNorm1d(181),
     nn.Linear(181, 500),
@@ -35,10 +36,10 @@ nn_model.to(device)
 
 # Определяем функцию потерь и выбираем оптимизатор
 loss = nn.CrossEntropyLoss().type(torch.cuda.FloatTensor)
-optimizer = optim.Adam(nn_model.parameters(), lr=1e-4, weight_decay=1e-1)
+optimizer = optim.Adam(nn_model.parameters(), lr=1e-4, weight_decay=1e-2)
 
 # Будем также использовать LR Annealing
-scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.9, verbose=False)
+scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.99, verbose=False, )
 
 # Лучше будем снижать LR на плато !UPDATE - не будем :)
 '''scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=.1, patience=5)'''
@@ -48,9 +49,10 @@ loss_history = []
 val_loss_history = []
 train_history = []
 val_history = []
+lr_history = []
 
 # Запускаем тренировку!
-num_epochs = 200
+num_epochs = 1000
 for epoch in tqdm(range(num_epochs)):
     nn_model.train()  # Enter train mode
 
@@ -99,6 +101,7 @@ for epoch in tqdm(range(num_epochs)):
     val_loss = validation_loss(nn_model, val_loader, loss)
     val_loss_history.append(val_loss)
 
+    lr_history.append(scheduler.optimizer.param_groups[0]['lr'])
     # Уменьшаем лернинг рейт (annealing)
     scheduler.step(val_loss)
 
