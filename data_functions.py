@@ -56,15 +56,15 @@ class TitanicDataset(Dataset):
         self.test = test
         self.X = np.array([self.train_data.PassengerId,
                       self.train_data.Pclass,
-                      *(self.string_data_vectorizer(self.train_data.Name, max_features=80).T),
+                      *(self.string_data_vectorizer(self.train_data.Name, max_features=5).T),
                       self.sexes(),
                       self.restore_age(),
                       self.train_data.SibSp,
                       self.train_data.Parch,
-                      *(self.string_data_vectorizer(self.train_data.Ticket, max_features=10, tickets=True).T),
+                      *(self.string_data_vectorizer(self.train_data.Ticket, max_features=5, tickets=True).T),
                       self.ticket_numbers(),
                       self.train_data.Fare,
-                      *(self.string_data_vectorizer(self.train_data.Cabin, max_features=80, clear_data=False).T),
+                      *(self.string_data_vectorizer(self.train_data.Cabin, max_features=10, clear_data=False).T),
                       *(self.string_data_vectorizer(self.train_data.Embarked, max_features=3, clear_data=False,
                                                     embarked=True).T)]).T
 

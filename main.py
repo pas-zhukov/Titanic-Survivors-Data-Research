@@ -22,11 +22,11 @@ data_train = TitanicDataset('train.csv', test=False)
 train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, validation_split=.1)
 
 nn_model = nn.Sequential(
-    nn.Linear(181, 181),
+    nn.Linear(31, 31),
 
     nn.LeakyReLU(inplace=True),
-    nn.BatchNorm1d(181),
-    nn.Linear(181, 500),
+    nn.BatchNorm1d(31),
+    nn.Linear(31, 500),
     nn.ELU(inplace=True),
     nn.Linear(500, 2),
     nn.Softmax()
