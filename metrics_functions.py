@@ -1,7 +1,5 @@
 import torch
 
-
-
 # Подключим видеокарту!
 if torch.cuda.is_available():
     dev = 'cuda:0'

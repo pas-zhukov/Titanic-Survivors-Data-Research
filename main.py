@@ -16,10 +16,10 @@ else:
 device = torch.device(dev)
 
 # Загрузка датасета
-data_train = TitanicDataset()
+data_train = TitanicDataset(normalize=True)
 
 # Лоадеры для тренировки и валидации
-train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, validation_split=.25)
+train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, validation_split=.1)
 
 nn_model = nn.Sequential(
     nn.Linear(16, 16),
@@ -43,10 +43,10 @@ loss = nn.CrossEntropyLoss().type(torch.cuda.FloatTensor)
 optimizer = optim.Adam(nn_model.parameters(), lr=1e-4, weight_decay=1e-2)
 
 # Будем также использовать LR Annealing
-scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.999, verbose=False, )
+scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.9999, verbose=False, )
 
 # Лучше будем снижать LR на плато !UPDATE - не будем :)
-'''scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=.1, patience=5)'''
+#scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=.5, patience=50)
 
 # Создадим списки для сохранения величины функции потерь, точности на тренировки и валидации - на каждом этапе (эпохе)
 loss_history = []
@@ -56,7 +56,7 @@ val_history = []
 lr_history = []
 
 # Запускаем тренировку!
-num_epochs = 500
+num_epochs = 5000
 for epoch in tqdm(range(num_epochs)):
     nn_model.train()  # Enter train mode
 
