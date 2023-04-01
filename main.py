@@ -16,19 +16,23 @@ else:
 device = torch.device(dev)
 
 # Загрузка датасета
-data_train = TitanicDataset('train.csv', test=False)
+data_train = TitanicDataset()
 
 # Лоадеры для тренировки и валидации
-train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, validation_split=.1)
+train_loader, val_loader = get_loaders(batch_size=51, data_train=data_train, validation_split=.25)
 
 nn_model = nn.Sequential(
-    nn.Linear(31, 31),
+    nn.Linear(16, 16),
 
     nn.LeakyReLU(inplace=True),
-    nn.BatchNorm1d(31),
-    nn.Linear(31, 500),
+    nn.BatchNorm1d(16),
+    nn.Linear(16, 62),
     nn.ELU(inplace=True),
-    nn.Linear(500, 2),
+    nn.Linear(62, 500),
+    nn.ELU(inplace=True),
+    nn.Linear(500, 620),
+    nn.ELU(inplace=True),
+    nn.Linear(620, 2),
     nn.Softmax()
 )
 nn_model.type(torch.cuda.FloatTensor)
@@ -39,7 +43,7 @@ loss = nn.CrossEntropyLoss().type(torch.cuda.FloatTensor)
 optimizer = optim.Adam(nn_model.parameters(), lr=1e-4, weight_decay=1e-2)
 
 # Будем также использовать LR Annealing
-scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.99, verbose=False, )
+scheduler = optim.lr_scheduler.MultiplicativeLR(optimizer, lambda ep: 0.999, verbose=False, )
 
 # Лучше будем снижать LR на плато !UPDATE - не будем :)
 '''scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=.1, patience=5)'''
@@ -52,7 +56,7 @@ val_history = []
 lr_history = []
 
 # Запускаем тренировку!
-num_epochs = 1000
+num_epochs = 500
 for epoch in tqdm(range(num_epochs)):
     nn_model.train()  # Enter train mode
 
