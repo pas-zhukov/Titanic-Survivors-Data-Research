@@ -20,7 +20,7 @@ else:
 device = torch.device(dev)
 
 
-def get_loaders(batch_size, data_train, validation_split=.2):
+def get_loaders(batch_size: int, data_train, validation_split=.2):
 
     # Определяем количество примеров в фолде валидации
     split = int(np.floor(validation_split * len(data_train)))
